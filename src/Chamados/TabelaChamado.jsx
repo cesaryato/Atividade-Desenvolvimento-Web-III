@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function TabelaChamados({ chamados = [], onAtualizarStatus }) {
+export function TabelaChamados({ chamados = [], onAtualizarStatus, onExcluir }) {
   const [nomeFuncionario, setNomeFuncionario] = useState("Atendente 01");
 
   if (chamados.length === 0) {
@@ -25,7 +25,7 @@ export function TabelaChamados({ chamados = [], onAtualizarStatus }) {
         <thead>
           <tr>
             <th>Protocolo</th>
-            <th>Data/Hora</th>
+            <th>Data e Hora</th>
             <th>Solicitante</th>
             <th>Prioridade</th>
             <th>Categoria</th>
@@ -58,16 +58,27 @@ export function TabelaChamados({ chamados = [], onAtualizarStatus }) {
                 </span>
               </td>
               <td>
-                <select
-                  value={item.status}
-                  onChange={(e) =>
-                    onAtualizarStatus(item.id, e.target.value, nomeFuncionario)
-                  }
-                >
-                  <option value="Aberto">Aberto</option>
-                  <option value="Em Andamento">Em Andamento</option>
-                  <option value="Concluído">Concluído</option>
-                </select>
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                  <select
+                    value={item.status}
+                    onChange={(e) =>
+                      onAtualizarStatus(item.id, e.target.value, nomeFuncionario)
+                    }
+                  >
+                    <option value="Aberto">Aberto</option>
+                    <option value="Em Andamento">Em Andamento</option>
+                    <option value="Concluído">Concluído</option>
+                  </select>
+
+                  {/* Botão de Excluir que executa a prop onExcluir passando o ID do item */}
+                  <button
+                    type="button"
+                    className="btn-excluir"
+                    onClick={() => onExcluir(item.id)}
+                  >
+                    Excluir
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
