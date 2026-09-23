@@ -2,6 +2,26 @@ import { useState } from "react";
 
 export function TabelaChamados({ chamados = [], onAtualizarStatus, onExcluir }) {
   const [nomeFuncionario, setNomeFuncionario] = useState("Atendente 01");
+  
+  const [modalAberto, setModalAberto] = useState(false);
+  const [chamadoParaExcluir, setChamadoParaExcluir] = useState(null);
+
+  function abrirModalConfirmacao(chamado) {
+    setChamadoParaExcluir(chamado);
+    setModalAberto(true);
+  }
+
+  function fecharModal() {
+    setModalAberto(false);
+    setChamadoParaExcluir(null);
+  }
+
+  function confirmarExclusao() {
+    if (chamadoParaExcluir) {
+      onExcluir(chamadoParaExcluir.id);
+      fecharModal();
+    }
+  }
 
   if (chamados.length === 0) {
     return <p className="mensagem-vazia">Nenhum chamado registrado até o momento.</p>;
@@ -70,11 +90,10 @@ export function TabelaChamados({ chamados = [], onAtualizarStatus, onExcluir }) 
                     <option value="Concluído">Concluído</option>
                   </select>
 
-                  {/* Botão de Excluir que executa a prop onExcluir passando o ID do item */}
                   <button
                     type="button"
                     className="btn-excluir"
-                    onClick={() => onExcluir(item.id)}
+                    onClick={() => abrirModalConfirmacao(item)}
                   >
                     Excluir
                   </button>
@@ -84,6 +103,38 @@ export function TabelaChamados({ chamados = [], onAtualizarStatus, onExcluir }) 
           ))}
         </tbody>
       </table>
+
+      {/* JANELA DE CONFIRMAÇÃO ESTILO WINDOWS */}
+      {modalAberto && (
+        <div className="win-overlay">
+          <div className="win-dialog">
+            {/* Barra de Título */}
+            <div className="win-header">
+              <span className="win-title">Confirmar Exclusão</span>
+              <button className="win-close-btn" onClick={fecharModal}>✕</button>
+            </div>
+
+            {/* Conteúdo com ícone de aviso */}
+            <div className="win-body">
+              <div className="win-icon-warning">⚠️</div>
+              <div className="win-message">
+                <p>Tem certeza de que deseja excluir o chamado <strong>#{chamadoParaExcluir?.id}</strong>?</p>
+                <p className="win-subtext">Esta ação não poderá ser desfeita.</p>
+              </div>
+            </div>
+
+            {/* Rodapé com botões do Windows */}
+            <div className="win-footer">
+              <button className="win-btn win-btn-danger" onClick={confirmarExclusao}>
+                Sim
+              </button>
+              <button className="win-btn" onClick={fecharModal}>
+                Não
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
